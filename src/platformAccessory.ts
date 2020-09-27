@@ -10,7 +10,7 @@ import * as divoom from 'node-divoom-timebox-evo';
  * An instance of this class is created for each accessory your platform registers
  * Each accessory may expose multiple services of different service types.
  */
-export class ExamplePlatformAccessory {
+export class DivoomPlatformAccessory {
     private service: Service;
     private readonly ditoo = new divoom.TimeboxEvo();
 

@@ -1,7 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { ExamplePlatformAccessory } from './platformAccessory';
+import { DivoomPlatformAccessory } from './platformAccessory';
 
 import bsp from 'bluetooth-serial-port';
 
@@ -68,12 +68,12 @@ export class DivoomHomebridgePlatform implements DynamicPlatformPlugin {
 
                     if (existingAccessory) {
                         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
-                        new ExamplePlatformAccessory(this, existingAccessory, btSerial);
+                        new DivoomPlatformAccessory(this, existingAccessory, btSerial);
                     } else {
                         const accessory = new this.api.platformAccessory('Divoom Accessory', uuid);
                         // create the accessory handler for the newly create accessory
                         // this is imported from `platformAccessory.ts`
-                        new ExamplePlatformAccessory(this, accessory, btSerial);
+                        new DivoomPlatformAccessory(this, accessory, btSerial);
                         // link the accessory to your platform
                         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
                     }

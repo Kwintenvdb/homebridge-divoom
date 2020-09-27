@@ -36,3 +36,14 @@ After installing the plugin, add the following to the `platforms` array of your 
     }
 ]
 ```
+
+## Capabilities
+
+Current features:
+
+* Changing display brightness
+
+Planned features:
+
+* Changing display color
+* TBD
