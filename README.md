@@ -42,8 +42,9 @@ After installing the plugin, add the following to the `platforms` array of your 
 Current features:
 
 * Changing display brightness
+* Changing display color
+   * Note: changing the display color wil automatically switch the device to the "time" channel.
 
 Planned features:
 
-* Changing display color
 * TBD
