@@ -1,5 +1,4 @@
 {
-    "private": true,
     "displayName": "Homebridge Divoom Plugin",
     "name": "homebridge-divoom",
     "version": "0.1.0",
