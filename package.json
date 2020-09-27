@@ -2,7 +2,7 @@
     "private": true,
     "displayName": "Homebridge Divoom Plugin",
     "name": "homebridge-divoom",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "A Homebridge plugin to control Divoom devices",
     "license": "Apache-2.0",
     "repository": {
