@@ -24,7 +24,7 @@ On Linux, install the Bluetooth development packages in order to build [node-blu
 
 ### Homebridge config
 
-After installing the plugin, add the following to the `platforms` array. Replace `DIVOOM_MAC_ADDRESS` by the MAC address of the Divoom device.
+After installing the plugin, add the following to the `platforms` array of your `config.json` or through the Config menu in the Homebridge UI. Replace `DIVOOM_MAC_ADDRESS` by the MAC address of the Divoom device.
 
 ```json
 "platforms": [
