@@ -14,8 +14,8 @@ export class DivoomHomebridgePlatform implements DynamicPlatformPlugin {
     public readonly Service: typeof Service = this.api.hap.Service;
     public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
 
-    // this is used to track restored cached accessories
-    public readonly accessories: PlatformAccessory[] = [];
+    // This is used to track restored cached accessories
+    public readonly cachedAccessories: PlatformAccessory[] = [];
 
     constructor(
         public readonly log: Logger,
@@ -41,9 +41,8 @@ export class DivoomHomebridgePlatform implements DynamicPlatformPlugin {
      */
     configureAccessory(accessory: PlatformAccessory) {
         this.log.info('Loading accessory from cache:', accessory.displayName);
-
         // add the restored accessory to the accessories cache so we can track if it has already been registered
-        this.accessories.push(accessory);
+        this.cachedAccessories.push(accessory);
     }
 
     /**
@@ -52,95 +51,34 @@ export class DivoomHomebridgePlatform implements DynamicPlatformPlugin {
      * must not be registered again to prevent "duplicate UUID" errors.
      */
     discoverDevices() {
-        this.log.info('Discovering devies');
-
-
-        // EXAMPLE ONLY
-        // A real plugin you would discover accessories from the local network, cloud services
-        // or a user-defined array in the platform config.
-        // const exampleDevices = [
-        //     {
-        //         exampleUniqueId: 'ABCD',
-        //         exampleDisplayName: 'Bedroom',
-        //     },
-        //     {
-        //         exampleUniqueId: 'EFGH',
-        //         exampleDisplayName: 'Kitchen',
-        //     },
-        // ];
+        this.log.info('Discovering devices');
 
         // MAC addresses of all Divoom accessories declared in config
         const deviceAddresses = this.config.devices as string[];
+        this.log.info('device addresses: ', deviceAddresses);
+
         deviceAddresses.forEach(deviceAddress => {
             const btSerial = new bsp.BluetoothSerialPort();
             btSerial.findSerialPortChannel(deviceAddress, channel => {
-                console.log('channel', channel);
                 btSerial.connect(deviceAddress, channel, () => {
-                    console.log('connected to', deviceAddress);
-                    // btSerial.on('data', buffer => {
-                    // console.log('buffer', buffer);
-                    // });
+                    this.log.info('connected to', deviceAddress);
 
                     const uuid = this.api.hap.uuid.generate(deviceAddress);
-                    const accessory = new this.api.platformAccessory('Divoom Accessory', uuid);
-                    // create the accessory handler for the newly create accessory
-                    // this is imported from `platformAccessory.ts`
-                    new ExamplePlatformAccessory(this, accessory, btSerial);
+                    const existingAccessory = this.cachedAccessories.find(accessory => accessory.UUID === uuid);
 
-                    // link the accessory to your platform
-                    this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+                    if (existingAccessory) {
+                        this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
+                        new ExamplePlatformAccessory(this, existingAccessory, btSerial);
+                    } else {
+                        const accessory = new this.api.platformAccessory('Divoom Accessory', uuid);
+                        // create the accessory handler for the newly create accessory
+                        // this is imported from `platformAccessory.ts`
+                        new ExamplePlatformAccessory(this, accessory, btSerial);
+                        // link the accessory to your platform
+                        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+                    }
                 });
             });
         });
-
-
-
-        // loop over the discovered devices and register each one if it has not already been registered
-        // for (const device of exampleDevices) {
-
-        //     // generate a unique id for the accessory this should be generated from
-        //     // something globally unique, but constant, for example, the device serial
-        //     // number or MAC address
-        //     const uuid = this.api.hap.uuid.generate(device.exampleUniqueId);
-
-        //     // see if an accessory with the same uuid has already been registered and restored from
-        //     // the cached devices we stored in the `configureAccessory` method above
-        //     const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
-
-        //     if (existingAccessory) {
-        //         // the accessory already exists
-        //         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
-
-        //         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        //         // existingAccessory.context.device = device;
-        //         // this.api.updatePlatformAccessories([existingAccessory]);
-
-        //         // create the accessory handler for the restored accessory
-        //         // this is imported from `platformAccessory.ts`
-        //         new ExamplePlatformAccessory(this, existingAccessory, btSerial);
-
-        //     } else {
-        //         // the accessory does not yet exist, so we need to create it
-        //         this.log.info('Adding new accessory:', device.exampleDisplayName);
-
-        //         // create a new accessory
-        //         const accessory = new this.api.platformAccessory(device.exampleDisplayName, uuid);
-
-        //         // store a copy of the device object in the `accessory.context`
-        //         // the `context` property can be used to store any data about the accessory you may need
-        //         accessory.context.device = device;
-
-        //         // create the accessory handler for the newly create accessory
-        //         // this is imported from `platformAccessory.ts`
-        //         new ExamplePlatformAccessory(this, accessory, btSerial);
-
-        //         // link the accessory to your platform
-        //         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-        //     }
-
-        //     // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
-        //     // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-        // }
-
     }
 }
