@@ -27,7 +27,7 @@
     ],
     "dependencies": {
         "bluetooth-serial-port": "^2.2.7",
-        "node-divoom-timebox-evo": "^0.3.0"
+        "node-divoom-timebox-evo": "github:Kwintenvdb/node-divoom-timebox-evo"
     },
     "devDependencies": {
         "@types/node": "^14.11.2",
