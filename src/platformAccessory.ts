@@ -1,5 +1,4 @@
 import {
-    Service,
     PlatformAccessory,
     CharacteristicValue,
     CharacteristicSetCallback,
