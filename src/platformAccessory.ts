@@ -18,7 +18,6 @@ import * as divoom from 'node-divoom-timebox-evo';
  * Each accessory may expose multiple services of different service types.
  */
 export class DivoomPlatformAccessory {
-    private service: Service;
     private readonly ditoo = new divoom.TimeboxEvo();
 
     private isOn = true;
@@ -30,21 +29,26 @@ export class DivoomPlatformAccessory {
         private readonly accessory: PlatformAccessory,
         private readonly btSerialPort: bsp.BluetoothSerialPort,
     ) {
-        this.service = this.accessory.getService(this.platform.Service.Lightbulb) ||
+        const lightbulbService = this.accessory.getService(this.platform.Service.Lightbulb) ||
             this.accessory.addService(this.platform.Service.Lightbulb);
 
-        this.service.setCharacteristic(this.platform.Characteristic.Name, 'Divoom accessory');
+        lightbulbService.setCharacteristic(this.platform.Characteristic.Name, 'Divoom accessory');
 
-        this.service.getCharacteristic(this.platform.Characteristic.On)
+        lightbulbService.getCharacteristic(this.platform.Characteristic.On)
             .on(CharacteristicEventTypes.SET, this.setOn.bind(this))
             .on(CharacteristicEventTypes.GET, this.getOn.bind(this));
-        this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+        lightbulbService.getCharacteristic(this.platform.Characteristic.Brightness)
             .on(CharacteristicEventTypes.SET, this.setBrightness.bind(this));
-        this.service.getCharacteristic(this.platform.Characteristic.Hue)
+        lightbulbService.getCharacteristic(this.platform.Characteristic.Hue)
             .on(CharacteristicEventTypes.SET, this.setHue.bind(this));
-        this.service.getCharacteristic(this.platform.Characteristic.Saturation)
+        lightbulbService.getCharacteristic(this.platform.Characteristic.Saturation)
             .on(CharacteristicEventTypes.SET, this.setSaturation.bind(this));
 
+        const speakerService = this.accessory.getService(this.platform.Service.Speaker) ||
+            this.accessory.addService(this.platform.Service.Speaker);
+        speakerService.setCharacteristic(this.platform.Characteristic.Name, 'Divoom speaker');
+        speakerService.getCharacteristic(this.platform.Characteristic.Volume)
+            .on(CharacteristicEventTypes.SET, this.setVolume.bind(this));
     }
 
     setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
@@ -75,9 +79,18 @@ export class DivoomPlatformAccessory {
 
     setSaturation(value: CharacteristicValue, callback: CharacteristicSetCallback) {
         this.platform.log.debug('Set Characteristic Saturation -> ', value);
-        
+
         this.saturation = value as number;
         this.updateColorAndShowTime(callback);
+    }
+
+    setVolume(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+        this.platform.log.warn('Set Characteristic Volume -> ', value);
+
+        const volume = Math.round((value as number) / 100 * 16);
+        const req = this.ditoo.createRequest('volume');
+        req.volume = volume;
+        this.sendDitooRequest(req, callback);
     }
 
     private updateColorAndShowTime(callback: CharacteristicSetCallback) {
