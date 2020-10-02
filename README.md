@@ -44,6 +44,7 @@ Current features:
 * Changing display brightness
 * Changing display color
    * Note: changing the display color wil automatically switch the device to the "time" channel.
+* Changing volume
 
 Planned features:
 
