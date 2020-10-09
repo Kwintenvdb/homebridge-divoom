@@ -4,6 +4,8 @@ This [Homebridge](https://github.com/homebridge/homebridge) allows you to contro
 
 **Note:** only tested on a single Divoom Ditoo, other types of Divoom devices or multiple devices might not be supported currently.
 
+Credit to [node-divoom-timebox-evo](https://github.com/RomRider/node-divoom-timebox-evo) for doing the majority of the legwork to properly reverse-engineer the protocol and exposing it in a nice API.
+
 ## Prerequisites
 
 **Only supports up to Node v12.x currently. Later versions will not work.**
